@@ -30,10 +30,7 @@ public class UI_Maneger : MonoBehaviour
     }
     public void ActivateBattlesPanel(GameObject panelToBeActivated)
     {
-        uiPrefab.UI_Prefabs[0].SetActive(panelToBeActivated.Equals(uiPrefab.UI_Prefabs[0]));
-        uiPrefab.UI_Prefabs[1].SetActive(panelToBeActivated.Equals(uiPrefab.UI_Prefabs[1]));
-        //uiPrefab.resultPanel.SetActive(panelToBeActivated.Equals(uiPrefab.resultPanel));
-        for (int i = 0; i < uiPrefab.UI_Num; i++)
+        for (int i = 0; i < uiPrefab.UI_Prefabs.Length; i++)
         {
             if (panelToBeActivated.Equals(uiPrefab.UI_Prefabs[i])) nowPanel = i;
             uiPrefab.UI_Prefabs[i].SetActive(panelToBeActivated.Equals(uiPrefab.UI_Prefabs[i]));
@@ -42,7 +39,7 @@ public class UI_Maneger : MonoBehaviour
 
     public void ReturnPanel()
     {
-        for (int i = 0; i < uiPrefab.UI_Num; i++)
+        for (int i = 0; i < uiPrefab.UI_Prefabs.Length; i++)
         {
             uiPrefab.UI_Prefabs[i].SetActive(uiPrefab.UI_Prefabs[nowPanel-1].Equals(uiPrefab.UI_Prefabs[i]));
         }
@@ -53,7 +50,6 @@ public class UI_Maneger : MonoBehaviour
 [Serializable]
 public class UI_Prefab
 {
-    public readonly int UI_Num = 2;
 
     [Header("以下コマンド用のパネルを入れること")]
     GameObject selectPanel;
