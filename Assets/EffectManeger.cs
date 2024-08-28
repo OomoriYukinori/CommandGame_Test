@@ -8,7 +8,6 @@ public class EffectManeger : MonoBehaviour
     bool guard;
     bool Items;
 
-    int playerHp;
     int enemyHp;
 
     StatusManeger status;
@@ -24,7 +23,7 @@ public class EffectManeger : MonoBehaviour
         uI_Prefab = GetComponent<UI_Prefab>();
 
         enemy = GameObject.FindGameObjectsWithTag("Enemy");
-        enemyHp = enemy[0].GetComponent<StatusManeger>().nowHp;
+        enemyHp = enemy[0].GetComponent<StatusManeger>().maxHp;
 
         status = this.GetComponent<StatusManeger>();
 
@@ -45,21 +44,29 @@ public class EffectManeger : MonoBehaviour
         if (status.nowSp > 0)
         {
             guard = true;
+            StartCoroutine(turn());
         }
         else Debug.Log("SPが足りない！");
     }
     public void Item()
     {
-        if (status.nowItem > 0)
+        if (status.nowItem > 0 && status.nowHp < 10)
         {
             Items = true;
+
+            StartCoroutine(turn());
         }
-        else Debug.Log("Itemが足りない！");
+        else if(status.nowHp >= 10) Debug.Log("これ以上回復できない！");
+        else if(status.nowItem <= 0) Debug.Log("Itemが足りない！");
     }
     public void Escape()
     {
-        Debug.Log("家で休んで体力が全回復した！");
-        playerHp = status.maxHp;
+        Debug.Log("戦闘から逃げ出した！");
+        Debug.Log("あなたは回復した！");
+        status.nowHp = status.maxHp;
+        status.nowHp = status.maxSp;
+        status.nowHp = status.maxItem;
+        enemyHp = enemy[0].GetComponent<StatusManeger>().maxHp;
     }
 
     IEnumerator turn()
@@ -68,57 +75,88 @@ public class EffectManeger : MonoBehaviour
         {
             uI_Prefab.UI_Prefabs[i].SetActive(false);
         }
-        if (attack)
-        {
-            Debug.Log("あなたの攻撃!");
-            enemyHp--;
-            Debug.Log("敵に1のダメージ");
-        }
-
-        if (Items && enemyHp > 0)
-        {
-            Debug.Log("HPが回復した!");
-            playerHp += 2;
-        }
 
         if (enemyHp > 0)
         {
-            Debug.Log("敵からの攻撃!");
-            if (guard)
+            if (attack)
             {
-                if (UnityEngine.Random.Range(0, 100) <= 80)
+                Debug.Log("あなたの攻撃!");
+                yield return new WaitForSeconds(1);
+                enemyHp--;
+                Debug.Log("敵に1のダメージ");
+            }
+
+            if (Items && enemyHp > 0)
+            {
+                Debug.Log("HPが回復した!");
+                status.nowItem--;
+                status.nowHp += 2;
+            }
+
+            yield return new WaitForSeconds(1);
+            if (enemyHp > 0)
+            {
+                Debug.Log("敵からの攻撃!");
+
+                yield return new WaitForSeconds(1);
+                if (guard)
                 {
-                    enemyHp--;
-                    Debug.Log("敵に攻撃を跳ね返した! ");
-                    Debug.Log("敵に1のダメージ! ");
+                    status.nowSp--;
+                    if (UnityEngine.Random.Range(0, 100) <= 80)
+                    {
+                        enemyHp -= 2;
+                        Debug.Log("敵に攻撃を跳ね返した! ");
+
+                        yield return new WaitForSeconds(1);
+                        Debug.Log("敵に2のダメージ! ");
+                    }
+                    else
+                    {
+                        Debug.Log("跳ね返すのに失敗した!");
+                        yield return new WaitForSeconds(1);
+                        status.nowHp -= 2;
+                        Debug.Log("プレイヤーに2のダメージ!");
+                    }
+                    guard = false;
                 }
                 else
                 {
-                    Debug.Log("跳ね返すのに失敗した!");
-                    playerHp--;
-                    Debug.Log("プレイヤーに1のダメージ!");
+                    status.nowHp -= 2;
+                    Debug.Log("プレイヤーに2のダメージ!");
                 }
-                guard = false;
             }
-            else
+
+            yield return new WaitForSeconds(1);
+
+
+            if (enemyHp <= 0)
             {
-                playerHp--;
-                Debug.Log("プレイヤーに1のダメージ!");
+                Debug.Log("敵は倒れた!");
             }
+            else Debug.Log("敵の残りHP" + enemyHp);
+
+
+            yield return new WaitForSeconds(1);
+
+            if (status.nowHp <= 0)
+            {
+                Debug.Log("あなたは倒れた!");
+            }
+            else Debug.Log("あなた" +
+                            "　HP" + status.nowHp+
+                            "　SP" + status.nowSp+
+                            "　Item" + status.nowItem
+                            
+                            );
+
+            attack = false;
+            guard = false;
+            Items = false;
+
         }
+        else Debug.Log("敵がいないようだ！");
 
-        if (playerHp <= 0)
-        {
-            Debug.Log("あなたは倒れた!");
-        }
-        if (enemyHp <= 0)
-        {
-            Debug.Log("敵は倒れた!");
-        }
-
-
-
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
 
         for (int i = 0; i < uI_Prefab.UI_Prefabs.Length; i++)
         {

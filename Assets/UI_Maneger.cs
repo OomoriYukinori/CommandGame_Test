@@ -23,7 +23,6 @@ public class UI_Maneger : MonoBehaviour
 
     }
 
-
     public void ActivateModePanel(GameObject panelToBeActivated)
     {
         uiPrefab.UI_Prefabs[0].SetActive(panelToBeActivated.Equals(uiPrefab.UI_Prefabs[0]));

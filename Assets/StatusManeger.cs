@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StatusManeger : MonoBehaviour
 {
-    public readonly int maxHp = 3;
+    public readonly int maxHp = 10;
     public int nowHp;
     public readonly int maxSp = 3;
     public int nowSp;
@@ -16,6 +16,8 @@ public class StatusManeger : MonoBehaviour
     void Start()
     {
         nowHp = maxHp;
+        nowSp = maxSp;
+        nowItem = maxItem;
     }
 
     // Update is called once per frame
