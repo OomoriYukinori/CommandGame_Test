@@ -7,11 +7,12 @@ public class UI_Maneger : MonoBehaviour
 {
     [SerializeField] UI_Prefab uiPrefab;
     private GameObject oldPanel;
-    private int nowPanel;
+    public int nowPanel;
 
     // Start is called before the first frame update
     void Start()
     {
+        uiPrefab = GetComponent<UI_Prefab>();
         //uiPrefab.fightButton = gameObject;
         nowPanel = 0;
     }
@@ -47,30 +48,3 @@ public class UI_Maneger : MonoBehaviour
 
 }
 
-[Serializable]
-public class UI_Prefab
-{
-
-    [Header("以下コマンド用のパネルを入れること")]
-    GameObject selectPanel;
-
-    [Header("以下スキル用のパネルを入れること")]
-    GameObject skillPanel;
-
-    /*[Header("以下結果用のパネルを入れること")]
-    public GameObject resultPanel;
-    [Header("ここに結果用のテキストを入れること")]
-    public TextMesh resultText;
-    //*/
-
-    public GameObject[] UI_Prefabs;
-
-    public void SetPanel()
-    {
-        UI_Prefabs = new GameObject[]
-        {
-            selectPanel ,
-            skillPanel
-        };
-    }
-}
