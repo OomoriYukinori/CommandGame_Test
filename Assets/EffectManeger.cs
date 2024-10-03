@@ -51,7 +51,7 @@ public class EffectManeger : MonoBehaviour
     }
     public void Skill()
     {
-        if (status.nowSp > 0)
+        if (status.NowSp > 0)
         {
             guard = true;
             StartCoroutine(turn());
@@ -61,21 +61,21 @@ public class EffectManeger : MonoBehaviour
     }
     public void Item()
     {
-        if (status.nowItem > 0 && status.nowHp < 10)
+        if (status.NowItem > 0 && status.NowHp < 10)
         {
             Items = true;
 
             StartCoroutine(turn());
         }
-        else if (status.nowHp >= 10) displayText.Add("これ以上回復できない！");
-        else if (status.nowItem <= 0) displayText.Add("Itemが足りない！");
+        else if (status.NowHp >= 10) displayText.Add("これ以上回復できない！");
+        else if (status.NowItem <= 0) displayText.Add("Itemが足りない！");
     }
     public void Escape()
     {
         displayText.Add("戦闘から逃げ出した！");
-        status.nowHp = status.maxHp;
-        status.nowSp = status.maxSp;
-        status.nowItem = status.maxItem;
+        status.NowHp = status.maxHp;
+        status.NowSp = status.maxSp;
+        status.NowItem = status.maxItem;
         enemyHp = enemy[0].GetComponent<StatusManeger>().maxHp;
     }
 
@@ -98,8 +98,8 @@ public class EffectManeger : MonoBehaviour
             if (Items && enemyHp > 0)
             {
                 displayText.Add("HPが回復した!");
-                status.nowItem--;
-                status.nowHp += 2;
+                status.NowItem--;
+                status.NowHp += 2;
             }
 
             if (enemyHp > 0)
@@ -108,7 +108,7 @@ public class EffectManeger : MonoBehaviour
 
                 if (guard)
                 {
-                    status.nowSp--;
+                    status.NowSp--;
                     if (UnityEngine.Random.Range(0, 100) <= 80)
                     {
                         enemyHp -= 2;
@@ -121,14 +121,14 @@ public class EffectManeger : MonoBehaviour
                     {
                         displayText.Add("跳ね返すのに失敗した!");
                         //yield return new WaitForSeconds(1);
-                        status.nowHp -= 2;
+                        status.NowHp -= 2;
                         displayText.Add("プレイヤーに2のダメージ!");
                     }
                     guard = false;
                 }
                 else
                 {
-                    status.nowHp -= 2;
+                    status.NowHp -= 2;
                     displayText.Add("プレイヤーに2のダメージ!");
                 }
             }
@@ -143,14 +143,14 @@ public class EffectManeger : MonoBehaviour
 
 
 
-            if (status.nowHp <= 0)
+            if (status.NowHp <= 0)
             {
                 displayText.Add("あなたは倒れた!");
             }
             else displayText.Add("あなた" +
-                            "　HP" + status.nowHp +
-                            "　SP" + status.nowSp +
-                            "　Item" + status.nowItem
+                            "　HP" + status.NowHp +
+                            "　SP" + status.NowSp +
+                            "　Item" + status.NowItem
                             );
 
             attack = false;
