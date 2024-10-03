@@ -9,8 +9,9 @@ public class UI_Prefab : MonoBehaviour
     [Header("以下スキル用のパネルを入れること")]
     GameObject skillPanel;
 
-    /*[Header("以下結果用のパネルを入れること")]
-    public GameObject resultPanel;
+    [Header("以下結果用のパネルを入れること")]
+    GameObject resultPanel;
+    /*
     [Header("ここに結果用のテキストを入れること")]
     public TextMesh resultText;
     //*/
@@ -22,7 +23,8 @@ public class UI_Prefab : MonoBehaviour
         UI_Prefabs = new GameObject[]
         {
             selectPanel ,
-            skillPanel
+            skillPanel ,
+            resultPanel
         };
     }
 }

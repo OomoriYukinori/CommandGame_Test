@@ -1,11 +1,21 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EffectManeger : MonoBehaviour
 {
+    [SerializeField]
+    Text text;
+    List<string> displayText = new List<string>();
+    bool displayTextBool;
+
     bool attack;
     bool guard;
     bool Items;
+
+
+    bool skip = false;
 
     int enemyHp;
 
@@ -32,20 +42,22 @@ public class EffectManeger : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        
+
     }
     public void Attack()
     {
         attack = true;
         StartCoroutine(turn());
-    }public void Skill()
+    }
+    public void Skill()
     {
         if (status.nowSp > 0)
         {
             guard = true;
             StartCoroutine(turn());
         }
-        else Debug.Log("SPが足りない！");
+
+        else displayText.Add("SPが足りない！");
     }
     public void Item()
     {
@@ -55,97 +67,90 @@ public class EffectManeger : MonoBehaviour
 
             StartCoroutine(turn());
         }
-        else if(status.nowHp >= 10) Debug.Log("これ以上回復できない！");
-        else if(status.nowItem <= 0) Debug.Log("Itemが足りない！");
+        else if (status.nowHp >= 10) displayText.Add("これ以上回復できない！");
+        else if (status.nowItem <= 0) displayText.Add("Itemが足りない！");
     }
     public void Escape()
     {
-        Debug.Log("戦闘から逃げ出した！");
-        Debug.Log("あなたは回復した！");
+        displayText.Add("戦闘から逃げ出した！");
         status.nowHp = status.maxHp;
-        status.nowHp = status.maxSp;
-        status.nowHp = status.maxItem;
+        status.nowSp = status.maxSp;
+        status.nowItem = status.maxItem;
         enemyHp = enemy[0].GetComponent<StatusManeger>().maxHp;
     }
 
     IEnumerator turn()
     {
-        for (int i = 0; i < uI_Prefab.UI_Prefabs.Length; i++)
-        {
-            uI_Prefab.UI_Prefabs[i].SetActive(false);
-        }
+        displayText = new List<string>();
+
 
         if (enemyHp > 0)
         {
+
+
             if (attack)
             {
-                Debug.Log("あなたの攻撃!");
-                yield return new WaitForSeconds(1);
+                displayText.Add("あなたの攻撃!");
                 enemyHp--;
-                Debug.Log("敵に1のダメージ");
+                displayText.Add("敵に1のダメージ");
             }
 
             if (Items && enemyHp > 0)
             {
-                Debug.Log("HPが回復した!");
+                displayText.Add("HPが回復した!");
                 status.nowItem--;
                 status.nowHp += 2;
             }
 
-            yield return new WaitForSeconds(1);
             if (enemyHp > 0)
             {
-                Debug.Log("敵からの攻撃!");
+                displayText.Add("敵からの攻撃!");
 
-                yield return new WaitForSeconds(1);
                 if (guard)
                 {
                     status.nowSp--;
                     if (UnityEngine.Random.Range(0, 100) <= 80)
                     {
                         enemyHp -= 2;
-                        Debug.Log("敵に攻撃を跳ね返した! ");
+                        displayText.Add("敵に攻撃を跳ね返した! ");
 
-                        yield return new WaitForSeconds(1);
-                        Debug.Log("敵に2のダメージ! ");
+                        //yield return new WaitForSeconds(1);
+                        displayText.Add("敵に2のダメージ! ");
                     }
                     else
                     {
-                        Debug.Log("跳ね返すのに失敗した!");
-                        yield return new WaitForSeconds(1);
+                        displayText.Add("跳ね返すのに失敗した!");
+                        //yield return new WaitForSeconds(1);
                         status.nowHp -= 2;
-                        Debug.Log("プレイヤーに2のダメージ!");
+                        displayText.Add("プレイヤーに2のダメージ!");
                     }
                     guard = false;
                 }
                 else
                 {
                     status.nowHp -= 2;
-                    Debug.Log("プレイヤーに2のダメージ!");
+                    displayText.Add("プレイヤーに2のダメージ!");
                 }
             }
 
-            yield return new WaitForSeconds(1);
 
 
             if (enemyHp <= 0)
             {
-                Debug.Log("敵は倒れた!");
+                displayText.Add("敵は倒れた!");
             }
-            else Debug.Log("敵の残りHP" + enemyHp);
+            else displayText.Add("敵の残りHP" + enemyHp);
 
 
-            yield return new WaitForSeconds(1);
 
             if (status.nowHp <= 0)
             {
-                Debug.Log("あなたは倒れた!");
+                displayText.Add("あなたは倒れた!");
             }
-            else Debug.Log("あなた" +
-                            "　HP" + status.nowHp+
-                            "　SP" + status.nowSp+
+            else displayText.Add("あなた" +
+                            "　HP" + status.nowHp +
+                            "　SP" + status.nowSp +
                             "　Item" + status.nowItem
-                            
                             );
 
             attack = false;
@@ -153,14 +158,83 @@ public class EffectManeger : MonoBehaviour
             Items = false;
 
         }
-        else Debug.Log("敵がいないようだ！");
+        else displayText.Add("敵がいないようだ！");
 
-        yield return new WaitForSeconds(1);
+
+        for (int i = 0; i < displayText.Count; i++)
+        {
+            Debug.Log(displayText[i]);
+        }
+        DisplayText();
+
+        while (displayTextBool == true)
+        {
+            Debug.Log("stop2");
+            yield return null;
+        }
+
+    }
+
+    IEnumerator TextTest()
+    {
+        for (int i = 0; i < uI_Prefab.UI_Prefabs.Length; i++)
+        {
+            uI_Prefab.UI_Prefabs[i].SetActive(uI_Prefab.UI_Prefabs[2].Equals(uI_Prefab.UI_Prefabs[i]));
+        }
+
+        displayTextBool = true;
+        while (displayText == null)
+        {
+            Debug.Log("stop1");
+            yield return null;
+        }
+
+        for (int i = 0; i < displayText.Count; i++)
+        {
+            if (displayText[i] == null) continue;
+
+            text.text = "";
+            skip = false;
+
+            yield return new WaitForSeconds(0.1f);
+            StartCoroutine(nextTextKey());
+
+            foreach (char c in displayText[i])
+            {
+                text.text += c;
+                yield return new WaitForSeconds(0.1f);
+                if (skip) break;
+            }
+
+            while (!skip)
+            {
+                yield return null;
+            }
+        }
+
+        displayTextBool = false;
+
 
         for (int i = 0; i < uI_Prefab.UI_Prefabs.Length; i++)
         {
             uI_Prefab.UI_Prefabs[i].SetActive(uI_Prefab.UI_Prefabs[0].Equals(uI_Prefab.UI_Prefabs[i]));
         }
         uI_Maneger.nowPanel = 0;
+    }
+
+    IEnumerator nextTextKey()
+    {
+        while (!Input.GetKeyDown(KeyCode.Space))
+        {
+            yield return null;
+        }
+        skip = true;
+    }
+    void DisplayText()
+    {
+        if (!displayTextBool)
+        {
+            StartCoroutine(TextTest());
+        }
     }
 }
